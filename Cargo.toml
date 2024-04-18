@@ -1,0 +1,10 @@
+[package]
+name = "bevy_term"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { version = "0.13", default-features = false }
+crossterm = "0.27.0"
+ratatui = "0.26.1"
+bevy_rat = { path = "../bevy_rat" }
