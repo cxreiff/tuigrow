@@ -7,16 +7,22 @@ use ratatui::{
     },
 };
 
-use crate::utils::draw_lines_bounded;
+use crate::{
+    chronology::{Chronological, Chronology},
+    utils::draw_lines_bounded,
+};
 
-use super::root::{Grows, MAX_X, MAX_Y, MIN_X, MIN_Y};
+use super::root::{MAX_X, MAX_Y, MIN_X, MIN_Y};
 
 pub struct GrassWidget {
     lines: Vec<Line>,
 }
 
-impl Grows for GrassWidget {
-    fn grew(elapsed: f64, percent: f64) -> Self {
+impl Chronological for GrassWidget {
+    fn frame(chronology: &Chronology) -> Self {
+        let elapsed = chronology.global_time.elapsed_secs_f64();
+        let percent = chronology.growth_timer.fraction() as f64;
+
         let lines: Vec<Line> = (1..128)
             .map(|i| {
                 let color = if i % 2 == 0 {

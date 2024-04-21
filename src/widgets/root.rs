@@ -7,39 +7,42 @@ use ratatui::{
     },
 };
 
-use super::{clouds::CloudWidget, grass::GrassWidget, tree::TreeWidget};
+use crate::{
+    chronology::{Chronological, Chronology, WeatherVariant},
+    Flags,
+};
+
+use super::{clouds::CloudWidget, debug::DebugWidget, grass::GrassWidget, tree::TreeWidget};
 
 pub const MIN_X: f64 = -64.0;
 pub const MAX_X: f64 = 64.0;
 pub const MIN_Y: f64 = 0.0;
 pub const MAX_Y: f64 = 128.0;
 
-pub trait Grows {
-    fn grew(elapsed: f64, percent: f64) -> Self;
-}
-
-pub struct RootWidget {
+pub struct RootWidget<'a> {
     pub title: String,
-    pub elapsed: f64,
-    pub remaining: f64,
-    pub percent: f64,
-    pub paused: bool,
+    pub flags: &'a Flags,
+    pub chronology: &'a Chronology,
 }
 
-impl Widget for RootWidget {
+impl<'a> Widget for RootWidget<'a> {
     fn render(self, area: Rect, buf: &mut Buffer) {
+        let remaining = self.chronology.growth_timer.remaining_secs();
+        let paused = self.chronology.global_time.paused();
+
         let title = Title::from(format!(
             " {} [ {:0>2}:{:0>2} ] ",
             self.title,
-            self.remaining as u32 / 60,
-            self.remaining as u32 % 60
+            remaining as u32 / 60,
+            remaining as u32 % 60
         ));
+
         let subtitle = Title::from(Line::from(vec![
             Span::from(" [q] quit "),
             Span::styled("───", Style::default().fg(Color::Green)),
             Span::from(format!(
                 " [p] {} ",
-                if self.paused { "unpause" } else { "pause" }
+                if paused { "unpause" } else { "pause" }
             )),
         ]));
 
@@ -60,38 +63,16 @@ impl Widget for RootWidget {
 
         block.render(area, buf);
 
-        CloudWidget::grew(self.elapsed, self.percent).render(inner_area, buf);
-        GrassWidget::grew(self.elapsed, self.percent).render(inner_area, buf);
-        TreeWidget::grew(self.elapsed, self.percent).render(inner_area, buf);
-    }
-}
+        match self.chronology.weather_variant {
+            WeatherVariant::Clouds => CloudWidget::frame(self.chronology).render(inner_area, buf),
+            WeatherVariant::None => {}
+        }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+        GrassWidget::frame(self.chronology).render(inner_area, buf);
+        TreeWidget::frame(self.chronology).render(inner_area, buf);
 
-    #[test]
-    fn render() {
-        let widget = RootWidget {
-            title: "test".into(),
-            elapsed: 48.0,
-            remaining: 80.0,
-            percent: 0.375,
-            paused: false,
-        };
-
-        let mut buf = Buffer::empty(Rect::new(0, 0, 50, 5));
-
-        widget.render(buf.area, &mut buf);
-
-        let expected = Buffer::with_lines(vec![
-            "┏ test title ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓",
-            "┃                                                ┃",
-            "┃  count: 44 ('q' to quit)                       ┃",
-            "┃                                                ┃",
-            "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛",
-        ]);
-
-        assert_eq!(buf, expected);
+        if self.flags.debug {
+            DebugWidget::new(self.chronology).render(inner_area, buf);
+        }
     }
 }
