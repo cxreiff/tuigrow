@@ -1,7 +1,7 @@
 use bevy::{app::ScheduleRunnerPlugin, prelude::*};
 use bevy_rat::{ratatui_error_handler, ratatui_plugin, RatatuiResource};
 use chronology::{chronology_setup, chronology_update, Chronology};
-use keys::{d_to_debug, p_to_pause, q_to_quit, w_to_weather};
+use keys::handle_keys;
 use std::io;
 use std::time::Duration;
 use widgets::root::RootWidget;
@@ -28,10 +28,7 @@ fn main() {
         .add_systems(Startup, chronology_setup)
         .add_systems(Update, chronology_update)
         .add_systems(Update, ratatui_update.pipe(ratatui_error_handler))
-        .add_systems(Update, q_to_quit.pipe(ratatui_error_handler))
-        .add_systems(Update, p_to_pause.pipe(ratatui_error_handler))
-        .add_systems(Update, d_to_debug.pipe(ratatui_error_handler))
-        .add_systems(Update, w_to_weather.pipe(ratatui_error_handler))
+        .add_systems(Update, handle_keys.pipe(ratatui_error_handler))
         .insert_resource(Flags::default())
         .run();
 }
