@@ -9,3 +9,4 @@ crossterm = "0.27.0"
 ratatui = "0.26.1"
 bevy_rat = { path = "../bevy_rat" }
 rand = "0.8.5"
+itertools = "0.12.1"

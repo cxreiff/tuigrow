@@ -15,12 +15,14 @@ pub struct Chronology {
 pub enum WeatherVariant {
     None,
     Clouds,
+    Rain,
 }
 
 impl Distribution<WeatherVariant> for Standard {
     fn sample<R: rand::prelude::Rng + ?Sized>(&self, rng: &mut R) -> WeatherVariant {
         match rng.gen_range(0..=1) {
             0 => WeatherVariant::Clouds,
+            1 => WeatherVariant::Rain,
             _ => WeatherVariant::None,
         }
     }

@@ -12,7 +12,9 @@ use crate::{
     Flags,
 };
 
-use super::{clouds::CloudWidget, debug::DebugWidget, grass::GrassWidget, tree::TreeWidget};
+use super::{
+    clouds::CloudWidget, debug::DebugWidget, grass::GrassWidget, rain::RainWidget, tree::TreeWidget,
+};
 
 pub const MIN_X: f64 = -64.0;
 pub const MAX_X: f64 = 64.0;
@@ -57,7 +59,7 @@ impl<'a> Widget for RootWidget<'a> {
             .borders(Borders::all())
             .border_set(border::ROUNDED)
             .border_style(Style::default().fg(Color::Green))
-            .padding(Padding::new(2, 2, 1, 0));
+            .padding(Padding::horizontal(2));
 
         let inner_area = block.inner(area);
 
@@ -65,6 +67,7 @@ impl<'a> Widget for RootWidget<'a> {
 
         match self.chronology.weather_variant {
             WeatherVariant::Clouds => CloudWidget::frame(self.chronology).render(inner_area, buf),
+            WeatherVariant::Rain => RainWidget::frame(self.chronology).render(inner_area, buf),
             WeatherVariant::None => {}
         }
 
