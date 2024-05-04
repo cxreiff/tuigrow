@@ -22,7 +22,7 @@ pub const MIN_Y: f64 = 0.0;
 pub const MAX_Y: f64 = 128.0;
 
 pub struct RootWidget<'a> {
-    pub title: String,
+    pub title: &'a String,
     pub flags: &'a Flags,
     pub chronology: &'a Chronology,
 }
@@ -32,12 +32,17 @@ impl<'a> Widget for RootWidget<'a> {
         let remaining = self.chronology.growth_timer.remaining_secs();
         let paused = self.chronology.global_time.paused();
 
-        let title = Title::from(format!(
-            " {} [ {:0>2}:{:0>2} ] ",
-            self.title,
+        let timer = format!(
+            "[ {:0>2}:{:0>2} ]",
             remaining as u32 / 60,
             remaining as u32 % 60
-        ));
+        );
+
+        let title = Title::from(if self.title.is_empty() {
+            format!(" {} ", timer)
+        } else {
+            format!(" {} {} ", self.title, timer)
+        });
 
         let subtitle = Title::from(Line::from(vec![
             Span::from(" [q] quit "),

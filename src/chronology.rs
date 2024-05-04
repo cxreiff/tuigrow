@@ -3,6 +3,8 @@ use std::{fmt, time::Duration};
 use bevy::{prelude::*, time::Stopwatch};
 use rand::distributions::{Distribution, Standard};
 
+use crate::Args;
+
 #[derive(Resource)]
 pub struct Chronology {
     pub global_time: Stopwatch,
@@ -38,11 +40,11 @@ pub trait Chronological {
     fn frame(chronology: &Chronology) -> Self;
 }
 
-pub fn chronology_setup(mut commands: Commands) {
+pub fn chronology_setup(mut commands: Commands, args: Res<Args>) {
     commands.insert_resource(Chronology {
         global_time: Stopwatch::new(),
-        growth_timer: Timer::new(Duration::from_secs(192), TimerMode::Once),
-        weather_timer: Timer::from_seconds(768.0, TimerMode::Repeating),
+        growth_timer: Timer::new(Duration::from_secs(args.time), TimerMode::Once),
+        weather_timer: Timer::from_seconds(360.0, TimerMode::Repeating),
         weather_variant: WeatherVariant::Clouds,
     });
 }
