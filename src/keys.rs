@@ -17,7 +17,7 @@ pub fn handle_keys(
             if key_event.kind == event::KeyEventKind::Press {
                 match key_event.code {
                     event::KeyCode::Char('q') => {
-                        exit.send(AppExit);
+                        exit.send(AppExit::Success);
                     }
                     event::KeyCode::Char('p') => {
                         if chronology.global_time.paused() {

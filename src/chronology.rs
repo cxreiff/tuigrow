@@ -36,10 +36,6 @@ impl fmt::Display for WeatherVariant {
     }
 }
 
-pub trait Chronological {
-    fn frame(chronology: &Chronology) -> Self;
-}
-
 pub fn chronology_setup(mut commands: Commands, args: Res<Args>) {
     commands.insert_resource(Chronology {
         global_time: Stopwatch::new(),
