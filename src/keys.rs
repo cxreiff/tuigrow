@@ -1,19 +1,19 @@
 use std::{io, time::Duration};
 
 use bevy::{app::AppExit, prelude::*};
-use bevy_rat::RatatuiEvent;
+use bevy_rat::RatEvent;
 use crossterm::event;
 
 use crate::{chronology::Chronology, Flags};
 
 pub fn handle_keys(
-    mut rat_events: EventReader<RatatuiEvent>,
+    mut rat_events: EventReader<RatEvent>,
     mut exit: EventWriter<AppExit>,
     mut flags: ResMut<Flags>,
     mut chronology: ResMut<Chronology>,
 ) -> io::Result<()> {
     for ev in rat_events.read() {
-        if let RatatuiEvent(event::Event::Key(key_event)) = ev {
+        if let RatEvent(event::Event::Key(key_event)) = ev {
             if key_event.kind == event::KeyEventKind::Press {
                 match key_event.code {
                     event::KeyCode::Char('q') => {
